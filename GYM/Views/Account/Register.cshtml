@@ -1,0 +1,108 @@
+﻿@using GYM.ViewModels
+@model RegisterUserViewModel
+@{
+    ViewData["Title"] = "Register";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - FIT GYM</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/GYM.styles.css" asp-append-version="true" />
+    <style>
+        body {
+          background-color: #121212;
+          color: white;
+          font-family: Arial, sans-serif;
+        }
+        .card-dark {
+          background-color: #1e1e1e;
+          border-radius: 12px;
+          padding: 30px;
+          width: 100%;
+          max-width: 400px;
+        }
+        .form-control {
+          background-color: #2a2a2a;
+          border: none;
+          color: white;
+          padding: 10px;
+          border-radius: 6px;
+        }
+        .form-control:focus {
+          background-color: #2a2a2a;
+          color: white;
+          outline: none;
+          box-shadow: 0 0 0 2px #3a3a3a;
+        }
+        .form-control::placeholder {
+          color: #888;
+          opacity: 1;
+        }
+        .btn-custom {
+          background-color: #3a3a3a;
+          color: white;
+          border-radius: 6px;
+          padding: 10px;
+          width: 100%;
+          border: none;
+        }
+        .btn-custom:hover {
+          background-color: #555;
+        }
+        a {
+          color: #bbb;
+          text-decoration: none;
+        }
+        a:hover {
+          color: white;
+          text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="d-flex justify-content-center align-items-center vh-100">
+
+    <div class="card-dark">
+        <h3 class="text-center mb-4">Create Account</h3>
+        <form asp-action="SaveRegister">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <!-- Username -->
+            <div class="mb-3">
+                <input asp-for="UserName" type="text" class="form-control" placeholder="Username" required>
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+            <!-- Email -->
+            <div class="mb-3">
+                <input asp-for="Email" type="email" class="form-control" placeholder="Email" required>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <!-- Password -->
+            <div class="mb-3">
+                <input asp-for="Password" type="password" class="form-control" placeholder="Password" required>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <!-- Confirm Password -->
+            <div class="mb-3">
+                <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm Password" required>
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+            <!-- Button -->
+            <button type="submit" class="btn-custom">Register</button>
+        </form>
+        <p class="text-center mt-3">Already have an account? <a asp-action="Login">Login</a></p>
+    </div>
+
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+    <script src="/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+</body>
+</html>
+
+

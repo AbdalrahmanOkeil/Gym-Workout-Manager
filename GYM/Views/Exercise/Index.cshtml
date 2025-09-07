@@ -1,0 +1,225 @@
+﻿@using GYM.ViewModels
+@model ExerciseInfoViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/FitGym.styles.css" asp-append-version="true" />
+    <title>Document</title>
+</head>
+<body>
+    <div class="container-fluid " style="background-color: rgb(26, 25, 25);">
+        <div class="row justify-content-between vh-100">
+            <div class="col-2 h-100 " style="background-color: rgb(32, 32, 32);">
+                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                    <partial name="_NavPartial"></partial>
+                </div>
+            </div>
+            <div id="div1" class="col-6" style="height: 95%;">
+                <h4 class="text-white">Exercise</h4>
+                 <div class=" rounded  d-flex justify-content-center align-items-center" style="height: 93%; background-color: rgb(32, 32, 32);">
+                    <div class="d-flex flex-column justify-content-center align-items-center text-white">
+                        <h6>Select Exercise</h6>
+                        <span style="color: rgb(60, 82, 82);">Click on an exercise to see statistics about it.</span>
+                    </div>
+                </div> 
+            </div>
+            <div class="col-3" style="height: 98%;">
+                <div class="me-3 mt-4 " style="height: 95%;">
+                    <partial name="_LibraryPartial"></partial>
+                    <div class="" style="height: 68%;">
+                        <div class="p-1 text-white h-100">
+                            <div class=" p-3 h-100 overflow-auto" style="background-color: rgb(32, 32, 32);">
+                                <ul class="list-group list-group-flush" id="Exercises">
+                                    @foreach (var exerciseItem in Model.Exercises)
+                                    {
+                                        <li class="list-group-item d-flex align-items-center text-white border-0" style="cursor: pointer; background-color: rgb(32, 32, 32);" onclick="GetExerciseInfo(@exerciseItem.Id)">
+                                            <div class="me-3">
+                                                <video src="@exerciseItem.VideoURL" width="40" height="40" class="rounded-circle" muted></video>
+                                            </div>
+                                            <div class="d-flex flex-column">
+                                                <span class="fw-semibold">@exerciseItem.Name</span>
+                                                <small class="text-secondary">@exerciseItem.PrimaryMuscle.Name</small>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script>
+        function GetExerciseInfo(exerciseId){
+            var div1=document.getElementById("div1");
+            div1.innerHTML="";
+            $.ajax({
+            url: "/Exercise/GetExerciseById?exerciseId=" + exerciseId,
+            success: function (result) {
+                console.log(result);
+                div1.innerHTML=`<div class="row rounded  d-flex justify-content-center align-items-center" style="height: 93%; background-color: rgb(32, 32, 32);">
+                    <div class="col-12 ">
+                        <div class="row h-100">
+                            <div class="col-6 h-75 text-white">
+                                <div class="col-12 mt-4">
+                                    <h5>${result.name}</h5>
+                                </div>
+                                <div class="col-12 mt-5">
+                                    <h6>Equipment: <small class="text-secondary">${result.equipment}</small></h6>
+                                    <h6>Primary Muscle Group: <small class="text-secondary">${result.primaryMuscle}</small></h6>
+                                </div>
+                            </div>
+                            <div class="col-6 ">
+                                <div class="col-12 ratio ratio-16x9">
+                                    <video src="${result.videoURL}" autoplay loop></video>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 h-50 text-white">
+                        <div class="col-12">
+                            <div class="row justify-content-between">
+                                <div class="col-4  h-100 ms-3"><h5>Statistics</h5></div>
+                                <div class="col-4  h-100">
+                                    <div class="btn-group w-100 h-100">
+                                        <button type="button" class="btn btn-outline-secondary text-white dropdown-toggle w-100 h-100" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: rgb(32, 32, 32);">
+                                            All Equipment
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end w-100">
+                                            <li><button class="dropdown-item" type="button">Last Month</button></li>
+                                            <li><button class="dropdown-item" type="button">Last Year</button></li>
+                                            <li><button class="dropdown-item" type="button">All Time</button></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-5 ms-3">
+                            <div class="col-12">
+                                <h5>Reps</h5>
+                            </div>
+                            <div class="col-12 d-flex justify-content-center align-items-center mt-5">
+                                <span>No Available Data Right Now</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>`
+            }
+        });
+        }
+
+        function ExercisesFilterByEquipment() {
+            var equipmentId = document.getElementById("Equipment").value;
+            console.log(equipmentId);
+
+            var exerciseItem = document.getElementById("Exercises");
+            exerciseItem.innerHTML = "";
+
+            $.ajax({
+                url: "/Exercise/GetExerciseByEquipmentId?equipmentId=" + equipmentId,
+                method: "GET",
+                success: function(result) {
+                    console.log(result);
+
+                    
+                    if (!Array.isArray(result)) {
+                        console.error(result);
+                        return;
+                    }
+
+                    for (const item of result) {
+                        exerciseItem.innerHTML += `
+                            <li class="list-group-item d-flex align-items-center text-white border-0" style="cursor: pointer; background-color: rgb(32, 32, 32);" onclick="GetExerciseInfo(${item.id})">
+                                <div class="me-3">
+                                    <video src="${item.videoURL}" width="40" height="40" class="rounded-circle" muted></video>
+                                </div>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">${item.name}</span>
+                                    <small class="text-secondary">${item.primaryMuscle?.name || ''}</small>
+                                </div>
+                            </li>
+                        `;
+                    }
+                },
+            });
+        }
+        function ExercisesFilterByMuscle(){
+            var muscleId=document.getElementById("Muscle").value;
+            console.log(muscleId);
+
+            var exerciseItem=document.getElementById("Exercises");
+            exerciseItem.innerHTML="";
+            $.ajax({
+            url: "/Exercise/GetExerciseByMuscleId?muscleId=" + muscleId,
+            success: function (result) {
+                console.log(result);
+                if (!Array.isArray(result)) {
+                    console.error(result);
+                    return;
+                }
+                for(const item of result){
+                    exerciseItem.innerHTML+=`
+                            <li class="list-group-item d-flex align-items-center text-white border-0" style="cursor: pointer; background-color: rgb(32, 32, 32);" onclick="GetExerciseInfo(${item.id})">
+                                <div class="me-3">
+                                    <video src="${item.videoURL}" width="40" height="40" class="rounded-circle" muted></video>
+                                </div>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">${item.name}</span>
+                                    <small class="text-secondary">${item.primaryMuscle?.name || ''}</small>
+                                </div>
+                            </li>
+                        `;
+                }
+            }
+        });
+        }
+
+        function SearchExercises(){
+            var search=document.getElementById("SearchBox").value;
+            console.log(search);
+            var exerciseItem=document.getElementById("Exercises");
+            exerciseItem.innerHTML="";
+            
+             $.ajax({
+                url: "/Exercise/SearchExercises?searchString=" + search,
+                method: "GET",
+                success: function(result) {
+                    console.log(result);
+
+
+
+                    for (const item of result) {
+                        exerciseItem.innerHTML += `
+                            <li class="list-group-item d-flex align-items-center text-white border-0" style="cursor: pointer; background-color: rgb(32, 32, 32);" onclick="GetExerciseInfo(${item.id})">
+                                <div class="me-3">
+                                    <video src="${item.videoURL}" width="40" height="40" class="rounded-circle" muted></video>
+                                </div>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">${item.name}</span>
+                                    <small class="text-secondary">${item.primaryMuscle?.name || ''}</small>
+                                </div>
+                            </li>
+                        `;
+                    }
+                },
+            });
+        }
+
+    </script>
+</body>
+</html>

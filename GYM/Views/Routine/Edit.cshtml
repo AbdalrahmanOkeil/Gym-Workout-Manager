@@ -1,0 +1,479 @@
+﻿@using GYM.ViewModels
+@model EditViewModel
+@{
+    ViewData["Title"] = "Edit";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/GYM.styles.css" asp-append-version="true" />
+    <title>Document</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .card-dark {
+            background-color: #1e1e1e;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .note-box {
+            background-color: #2a2a2a;
+            border: none;
+            color: white;
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .set-input {
+            background-color: #2a2a2a;
+            border: none;
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 6px;
+        }
+
+        .add-set {
+            background-color: #2a2a2a;
+            border: none;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            border-radius: 6px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+            .add-set:hover {
+                background-color: #3a3a3a;
+            }
+
+        ::placeholder {
+            color: #aaa;
+            opacity: 1;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 16.6667%; 
+            background-color: rgb(32, 32, 32);
+            overflow-y: auto;
+            padding-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            z-index: 1030; 
+        }
+        
+        .content-main {
+            margin-left: 16.6667%;
+            margin-right: 25%;
+            padding: 1rem;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-right {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            width: 25%;
+            background-color: rgb(26, 25, 25);
+            overflow-y: auto;
+            padding: 1rem;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <partial name="_NavPartial"></partial>
+    </div>
+
+    <div class="content-main">
+        <form id="Form" asp-action="SaveEdit" method="post">
+            <div class="justify-content-between">
+                <h4 class="text-white">Exercises</h4>
+                <input type="submit" value="Save Routine" class="form-control form text-white bg-dark border" />
+                <input type="hidden" name="UserId" value="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value" />
+
+                <input type="hidden" asp-for="Routine.Id" />
+                <label for="title">Title</label>
+                <input id="title" type="text" asp-for="Routine.Name" class="form-control form text-white my-input" placeholder="Routine Title" style="background-color: #2a2a2a;" />
+            </div>
+            @if (!Model.Routine.RoutineExercises.Any())
+            {
+                <div id="NoExercise" class="card-dark mt-4">
+                    <div class="rounded d-flex justify-content-center align-items-center" style="height: 93%; background-color: rgb(32, 32, 32);">
+                        <div class="d-flex flex-column justify-content-center align-items-center text-white">
+                            <h6>No Exercises</h6>
+                            <span style="color: rgb(60, 82, 82);">So far, you haven't added any exercises to this routine.</span>
+                        </div>
+                    </div>
+                </div>
+            }
+            @foreach(var item in Model.Routine.RoutineExercises)
+                {
+                    <div class="card-dark mt-4 exercise-card" data-exercise-id="@item.ExerciseId">
+                        
+                        <input type="hidden" class="exercise-id" value="@item.ExerciseId" />
+
+                        <!-- Header -->
+                        <div class="d-flex align-items-center mb-3 ">
+                            <video src="@item.Exercise.VideoURL" alt="exercise" class="rounded-circle me-2" width="40" height="40" muted></video>
+                            <h5 class="mb-0">@item.Exercise.Name</h5>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="mb-3">
+                            <label class="form-label">Note</label>
+                            <textarea class="note-box" rows="2"
+                                  placeholder="Add pinned note">@item.Note</textarea>
+                        </div>
+
+                        <!-- Rest Timer -->
+                        <div class="mb-3">
+                            <label class="form-label">Rest Timer:</label>
+                            <select class="rest-timer note-box">
+                                <option value="Off">Off</option>
+                                <option value="30s">30s</option>
+                                <option value="60s">60s</option>
+                                <option value="90s">90s</option>
+                            </select>
+                        </div>
+
+                        <!-- Table -->
+                        <div class="row text-center fw-bold mb-2">
+                            <div class="col">SET</div>
+                            <div class="col">KG</div>
+                            <div class="col">REPS</div>
+                        </div>
+
+                        <div class="sets-container">
+                            @foreach (var set in item.Sets)
+                            {
+                                <div class="row text-center mb-2 set-row">
+                                    <div class="col">
+                                        <input type="number" class="set-input set-index" value="@set.SetIndex" readonly />
+                                    </div>
+                                    <div class="col">
+                                        <input value="@set.Kg" type="number" class="set-input set-kg" placeholder="kg" />
+                                    </div>
+                                    <div class="col">
+                                        <input value="@set.Reps" type="number" class="set-input set-reps" placeholder="reps" />
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Add Set -->
+                        <div class="row mt-2">
+                            <div class="add-set btn btn-outline-primary mt-2" onclick="addSet(this)">+ Add set</div>
+                        </div>
+                    </div>
+                }
+        </form>
+    </div>
+
+    <div class="sidebar-right">
+        <div class=" d-flex align-items-center px-3 rounded" style="height: 8%; background-color: rgb(32, 32, 32);">
+            <div class="col text-white">
+                <h5>Library</h5>
+            </div>
+            <div class="col">
+                <a href="#" class=" text-decoration-none"><span>+ Custom Exercise</span></a>
+            </div>
+        </div>
+        <div class="mb-3">
+            <select id="Equipment" asp-for="EquipmentId" asp-items="Model.Equipments" class="form-select text-white" style="background-color: rgb(32, 32, 32);" onchange="ExercisesFilterByEquipment()">
+                <option value="">All Equipments</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <select id="Muscle" asp-for="MuscleId" asp-items="Model.Muscles" class="form-select text-white" style="background-color: rgb(32, 32, 32);" onchange="ExercisesFilterByMuscle()">
+                <option value="">All Muscles</option>
+            </select>
+        </div>
+        <div class="" style="height: 8%;">
+            <form class="h-100" asp-action="Index" asp-controller="Exercise" method="get">
+                <div class="input-group h-100">
+                    <input id="SearchBox" onkeyup="SearchExercises()" type="text" class="form-control h-100 my-input text-white " placeholder="Search Exercise..." style="background-color: rgb(32, 32, 32);">
+                </div>
+            </form>
+        </div>
+
+        <div style="height: 68%;">
+            <div class="p-1 text-white h-100">
+                <div class="p-3 h-100 overflow-auto" style="background-color: rgb(32, 32, 32);">
+                    <ul class="list-group list-group-flush" id="Exercises">
+                        @foreach (var exerciseItem in Model.Exercises)
+                        {
+                            <li class="list-group-item d-flex align-items-center text-white border-0 bi bi-plus" style="cursor: pointer; background-color: rgb(32, 32, 32);" onclick="AddExercise(@exerciseItem.Id)">
+                                <div class="me-3">
+                                    <video src="@exerciseItem.VideoURL" width="40" height="40" class="rounded-circle" muted></video>
+                                </div>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">@exerciseItem.Name</span>
+                                    <small class="text-secondary">@exerciseItem.PrimaryMuscle.Name</small>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script>
+        function ExercisesFilterByEquipment() {
+            var equipmentId = document.getElementById("Equipment").value;
+            console.log(equipmentId);
+
+            var exerciseItem = document.getElementById("Exercises");
+            exerciseItem.innerHTML = "";
+
+            $.ajax({
+                url: "/Exercise/GetExerciseByEquipmentId?equipmentId=" + equipmentId,
+                method: "GET",
+                success: function(result) {
+                    console.log(result);
+
+                    
+                    if (!Array.isArray(result)) {
+                        console.error(result);
+                        return;
+                    }
+
+                    for (const item of result) {
+                        exerciseItem.innerHTML += `
+                            <li class="list-group-item d-flex align-items-center text-white border-0 bi bi-plus" style="cursor: pointer; background-color: rgb(32, 32, 32);" onclick="AddExercise(${item.id})">
+                                <div class="me-3">
+                                    <video src="${item.videoURL}" width="40" height="40" class="rounded-circle" muted></video>
+                                </div>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">${item.name}</span>
+                                    <small class="text-secondary">${item.primaryMuscle?.name || ''}</small>
+                                </div>
+                            </li>
+                        `;
+                    }
+                },
+            });
+        }
+        function ExercisesFilterByMuscle(){
+            var muscleId=document.getElementById("Muscle").value;
+            console.log(muscleId);
+
+            var exerciseItem=document.getElementById("Exercises");
+            exerciseItem.innerHTML="";
+            $.ajax({
+            url: "/Exercise/GetExerciseByMuscleId?muscleId=" + muscleId,
+            success: function (result) {
+                console.log(result);
+                if (!Array.isArray(result)) {
+                    console.error(result);
+                    return;
+                }
+                for(const item of result){
+                    exerciseItem.innerHTML+=`
+                            <li class="list-group-item d-flex align-items-center text-white border-0 bi bi-plus" style="cursor: pointer; background-color: rgb(32, 32, 32);" onclick="AddExercise(${item.id})">
+                                <div class="me-3">
+                                    <video src="${item.videoURL}" width="40" height="40" class="rounded-circle" muted></video>
+                                </div>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">${item.name}</span>
+                                    <small class="text-secondary">${item.primaryMuscle?.name || ''}</small>
+                                </div>
+                            </li>
+                        `;
+                }
+            }
+        });
+        }
+
+        function SearchExercises(){
+            var search=document.getElementById("SearchBox").value;
+            console.log(search);
+            var exerciseItem=document.getElementById("Exercises");
+            exerciseItem.innerHTML="";
+
+             $.ajax({
+                url: "/Exercise/SearchExercises?searchString=" + search,
+                method: "GET",
+                success: function(result) {
+                    console.log(result);
+
+
+
+                    for (const item of result) {
+                        exerciseItem.innerHTML += `
+                            <li class="list-group-item d-flex align-items-center text-white border-0 bi bi-plus" style="cursor: pointer; background-color: rgb(32, 32, 32);" onclick="AddExercise(${item.id})">
+                                <div class="me-3">
+                                    <video src="${item.videoURL}" width="40" height="40" class="rounded-circle" muted></video>
+                                </div>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">${item.name}</span>
+                                    <small class="text-secondary">${item.primaryMuscle?.name || ''}</small>
+                                </div>
+                            </li>
+                        `;
+                    }
+                },
+            });
+        }
+        function AddExercise(exerciseId) {
+            // var noExerciseDiv = document.getElementById("NoExercise");
+            // noExerciseDiv.innerHTML = "";
+            var form = document.getElementById("Form");
+
+            $.ajax({
+                url: "/Exercise/GetExerciseById?exerciseId=" + exerciseId,
+                success: function (result) {
+                    console.log(result);
+
+                    let exerciseHtml = `
+                    <div class="card-dark mt-4 exercise-card" data-exercise-id="${result.id}">
+                        <!-- Hidden Id -->
+                        <input type="hidden" class="exercise-id" value="${exerciseId}" />
+
+                        <!-- Header -->
+                        <div class="d-flex align-items-center mb-3 ">
+                            <video src="${result.videoURL}" alt="exercise" class="rounded-circle me-2" width="40" height="40" muted></video>
+                            <h5 class="mb-0">${result.name}</h5>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="mb-3">
+                            <label class="form-label">Note</label>
+                            <textarea class="note-box" rows="2"
+                                placeholder="Add pinned note"></textarea>
+                        </div>
+
+                        <!-- Rest Timer -->
+                        <div class="mb-3">
+                            <label class="form-label">Rest Timer:</label>
+                            <select class="rest-timer note-box">
+                                <option value="Off">Off</option>
+                                <option value="30s">30s</option>
+                                <option value="60s">60s</option>
+                                <option value="90s">90s</option>
+                            </select>
+                        </div>
+
+                        <!-- Table -->
+                        <div class="row text-center fw-bold mb-2">
+                            <div class="col">SET</div>
+                            <div class="col">KG</div>
+                            <div class="col">REPS</div>
+                        </div>
+
+                        <div class="sets-container">
+                            <div class="row text-center mb-2 set-row">
+                                <div class="col">
+                                    <input type="number" class="set-input set-index" value="1" readonly />
+                                </div>
+                                <div class="col">
+                                    <input type="number" class="set-input set-kg" placeholder="kg" />
+                                </div>
+                                <div class="col">
+                                    <input type="number" class="set-input set-reps" placeholder="reps" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add Set -->
+                        <div class="row mt-2">
+                            <div class="add-set btn btn-outline-primary mt-2" onclick="addSet(this)">+ Add set</div>
+                        </div>
+                    </div>`;
+
+                    form.insertAdjacentHTML("beforeend", exerciseHtml);
+                    reIndexExercises();
+                }
+            });
+        }
+
+        
+        function reIndexExercises() {
+            let cards = document.querySelectorAll(".exercise-card");
+
+            cards.forEach((card, exIndex) => {
+                
+                card.querySelector(".exercise-id").setAttribute("name", `Exercises[${exIndex}].ExerciseId`);
+                card.querySelector("textarea").setAttribute("name", `Exercises[${exIndex}].Note`);
+                card.querySelector(".rest-timer").setAttribute("name", `Exercises[${exIndex}].RestTimer`);
+
+                
+                let sets = card.querySelectorAll(".set-row");
+                sets.forEach((setRow, setIndex) => {
+                    setRow.querySelector(".set-index").setAttribute("name", `Exercises[${exIndex}].Sets[${setIndex}].SetIndex`);
+                    setRow.querySelector(".set-kg").setAttribute("name", `Exercises[${exIndex}].Sets[${setIndex}].Kg`);
+                    setRow.querySelector(".set-reps").setAttribute("name", `Exercises[${exIndex}].Sets[${setIndex}].Reps`);
+                });
+            });
+        }
+
+       
+        document.getElementById("Form").addEventListener("submit", function () {
+            reIndexExercises();
+        });
+
+
+
+        function addSet(button) {
+            let exerciseCard = button.closest(".exercise-card");
+            let setsContainer = exerciseCard.querySelector(".sets-container");
+
+            
+            let setIndex = setsContainer.querySelectorAll(".set-row").length;
+
+            
+            let newSetHtml = `
+            <div class="row text-center mb-2 set-row">
+                <div class="col">
+                    <input type="number" class="set-input set-index" value="${setIndex + 1}" readonly />
+                </div>
+                <div class="col">
+                    <input type="number" class="set-input set-kg" placeholder="kg" />
+                </div>
+                <div class="col">
+                    <input type="number" class="set-input set-reps" placeholder="reps" />
+                </div>
+            </div>`;
+
+            setsContainer.insertAdjacentHTML("beforeend", newSetHtml);
+
+            
+            reIndexExercises();
+        }
+
+
+
+    </script>
+    <!--Client Side Validation-->
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>
+

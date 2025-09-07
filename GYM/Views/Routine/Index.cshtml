@@ -1,0 +1,119 @@
+﻿@model List<Routine>
+@{
+    ViewData["Title"] = "Routines";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Routines Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: rgb(26, 25, 25);
+            color: #fff;
+        }
+
+        .sidebar {
+            background-color: rgb(32, 32, 32);
+            min-height: 100vh;
+        }
+
+            .sidebar a {
+                color: #ccc;
+                text-decoration: none;
+            }
+
+                .sidebar a.active {
+                    color: #0d6efd;
+                    font-weight: bold;
+                }
+
+        .btn-routine {
+            background-color: rgb(71, 70, 70);
+            height: 45px;
+        }
+
+        .routine-item {
+            background-color: rgb(71, 70, 70);
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .routine-list {
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+
+            
+            <div class="row justify-content-between hv-100">
+                <div class="col-2 h-100" style="background-color: rgb(32, 32, 32);">
+                    <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                        <partial name="_NavPartial"></partial>
+                    </div>
+                </div>
+
+                
+                <div class="col-10 p-3 d-flex flex-column">
+
+                    <div class="row g-3 h-100">
+
+                        
+                        <div class="col-4 d-flex flex-column  rounded p-3" style="height: 400px; background-color: rgb(32, 32, 32);">
+                            <h5>Add Routines</h5>
+                            <a class="btn btn-routine mt-3 text-white" asp-action="Create"><i class="bi bi-file-earmark-plus"></i> New Routine</a>
+                            <!-- <button class="btn btn-routine mt-2 text-white"><i class="bi bi-folder-plus"></i> New Folder</button> -->
+                        </div>
+
+                        
+                        <div class="col-8 d-flex flex-column  rounded p-3" style="height: 400px; background-color: rgb(32, 32, 32);">
+                            <h5>My Routines (@ViewBag.RoutinesCount)</h5>
+                            <div class="routine-list mt-2 d-flex flex-column">
+                                @foreach(var item in Model)
+                                {
+
+                                        <div class="routine-item btn text-white">
+                                             <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none text-reset">
+                                                <span>@item.Name</span>
+                                            </a>
+                                            <div class="dropdown">
+                                                <button class="btn btn-dark btn-sm dropdown-toggle-split" type="button" data-bs-toggle="dropdown">&#8942;</button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    <li><a class="dropdown-item" asp-action="Edit" asp-controller="Routine" asp-route-id="@item.Id">Edit</a></li>
+                                                    <li><a class="dropdown-item" asp-action="Delete" asp-controller="Routine" asp-route-id="@item.Id" onclick="return confirm('Are you sure?')">Delete</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    
+                                    
+                                }
+                                
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

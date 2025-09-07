@@ -1,0 +1,27 @@
+﻿@using GYM.ViewModels
+@model ExerciseInfoViewModel
+<div class=" d-flex align-items-center px-3 rounded" style="height: 8%; background-color: rgb(32, 32, 32);">
+    <div class="col text-white">
+        <h5>Library</h5>
+    </div>
+    <div class="col">
+        <a href="#" class=" text-decoration-none"><span>+ Custom Exercise</span></a>
+    </div>
+</div>
+<div class="mb-3">
+    <select id="Equipment" asp-for="EquipmentId" asp-items="Model.Equipments" class="form-select text-white" style="background-color: rgb(32, 32, 32);" onchange="ExercisesFilterByEquipment()">
+        <option value="">All Equipments</option>
+    </select>
+</div>
+<div class="mb-3">
+    <select id="Muscle" asp-for="MuscleId" asp-items="Model.Muscles" class="form-select text-white" style="background-color: rgb(32, 32, 32);" onchange="ExercisesFilterByMuscle()">
+        <option value="">All Muscles</option>
+    </select>
+</div>
+<div class="" style="height: 8%;">
+    <form class="h-100" asp-action="Index" asp-controller="Exercise" method="get">
+        <div class="input-group h-100">
+            <input id="SearchBox" onkeyup="SearchExercises()" type="text" class="form-control h-100 my-input text-white " placeholder="Search Exercise..." style="background-color: rgb(32, 32, 32);">
+        </div>
+    </form>
+</div>

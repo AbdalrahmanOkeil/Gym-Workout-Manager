@@ -1,0 +1,107 @@
+﻿@using GYM.ViewModels
+@model GYM.ViewModels.HomeViewModel
+@{
+    ViewData["Title"] = "Home";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/FitGym.styles.css" asp-append-version="true" />
+    <title>Home</title>
+    <style>
+        body {
+            background-color: rgb(26, 25, 25);
+        }
+
+        
+        #sidebar {
+            background-color: rgb(32, 32, 32);
+            height: 100vh;
+            padding-top: 1rem;
+        }
+
+        
+        #mainContent {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+        }
+
+        .card-dark {
+            background-color: rgb(32, 32, 32);
+            color: white;
+        }
+
+        .list-group-item-dark {
+            background-color: rgb(32, 32, 32);
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+
+            <!-- Sidebar -->
+            <div id="sidebar" class="col-2 d-flex flex-column align-items-center text-white">
+                <partial name="_NavPartial"></partial>
+            </div>
+
+            <!-- Main Content -->
+            <div id="mainContent" class="col-10 text-center">
+                <h2 class="mb-3">👋 Welcome, @User.Identity.Name</h2>
+                <p class="text-secondary mb-4">Start building your training routines and track your progress easily.</p>
+
+                <div class="mb-4">
+                    <a class="btn btn-primary me-2" asp-controller="Routine" asp-action="Create">➕ Add Routine</a>
+                    <a class="btn btn-secondary" asp-controller="Exercise" asp-action="Index">📋 All Exercises</a>
+                </div>
+
+                <!-- Latest Routines -->
+                <div class="card card-dark mb-4 p-3 w-75">
+                    <h5>📅 Latest Routines</h5>
+                    <ul class="list-group list-group-flush overflow-auto" style="max-height: 200px;">
+                        @foreach (var routine in Model.LatestRoutines)
+                        {
+                            <li class="list-group-item list-group-item-dark d-flex justify-content-between align-items-center">
+                                <span>@routine.Name</span>
+                                <a class="btn btn-outline-light btn-sm" asp-controller="Routine" asp-action="Details" asp-route-id="@routine.Id">View</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+                <!-- Latest Exercises -->
+                <div class="card card-dark p-3 w-75">
+                    <h5>🏋️ Latest Exercises</h5>
+                    <ul class="list-group list-group-flush overflow-auto" style="max-height: 200px;">
+                        @foreach (var exercise in Model.LatestExercises)
+                        {
+                            <li class="list-group-item list-group-item-dark d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <video src="@exercise.VideoURL" width="40" height="40" class="rounded-circle me-2" muted></video>
+                                    <span>@exercise.Name</span>
+                                </div>
+                                <a class="btn btn-outline-light btn-sm" asp-controller="Exercise" asp-action="Index" asp-route-id="@exercise.Id">View</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
